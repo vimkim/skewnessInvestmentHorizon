@@ -1,32 +1,38 @@
 minN = 6;
 firmN = 10000;
 
-disp("read..");
-disp(datestr(now, 'HH:MM:SS')); % displays time
 %fullData = readtable("testData.csv"); % 678 lines
 %fullData = readtable("crsp20042008.csv"); % 200000 lines
-fullData = readtable("fulldata1.csv"); % 1000000 lines
-%fullData = readtable("fulldata.csv"); % 15153834 lines
 
 % process things into log Price and log Returns
-if exist('fullData1WithLogRet.mat', 'file')
-    load('fullData1WithLogRet.mat', 'fullData');
-%if exist('fullDataWithLogRet.mat', 'file')
-%    load('fullDataWithLogRet.mat', 'fullData');
+%if exist('fullData1WithLogRet.mat', 'file')
+%    load('fullData1WithLogRet.mat', 'fullData');
+if exist('~/fullDataWithLogRet.mat', 'file')
+    load('~/fullDataWithLogRet.mat', 'fullData');
+    disp("mat file found!");
 else
+    disp("read..");
+    disp(datestr(now, 'HH:MM:SS')); % displays time
+    %fullData = readtable("fulldata1.csv"); % 1000000 lines
+    fullData = readtable("fulldata.csv"); % 15153834 lines
+
+    disp("date..");
+    disp(datestr(now, 'HH:MM:SS')); % displays time
+    fullData.datenums = datenum(fullData.date);
+
     disp("logP..");
     disp(datestr(now, 'HH:MM:SS')); % displays time
     fullData.logP = log(fullData.adj_close);
 
     disp("logRet");
     disp(datestr(now, 'HH:MM:SS')); % displays time
-    fullData.logRet = [NaN; diff(data.logP)];
+    fullData.logRet = [NaN; diff(fullData.logP)];
     % save things
 
     disp("save...");
     disp(datestr(now, 'HH:MM:SS')); % displays time
-    save('fullData1WithLogRet.mat', 'fullData');
-    %save('fullDataWithLogRet.mat', 'fullData');
+    %save('fullData1WithLogRet.mat', 'fullData');
+    save('~/fullDataWithLogRet.mat', 'fullData');
     disp(datestr(now, 'HH:MM:SS')); % displays time
 end
 
@@ -49,6 +55,7 @@ stat.kurtosis = NaN(l,1);
 stat.yes = zeros(l,1);
 stat.zeroskew = zeros(l,1);
 stat.continued = zeros(l,1);
+
 
 n = 0;
 for i = 1 : firmN
@@ -90,7 +97,9 @@ for i = 1 : firmN
         skewnesses(k) = skew;
     end
 
+    % delete NaNs
     skewnesses(isnan(skewnesses)) = [];
+
     plot(skewnesses)
     hold on
 
